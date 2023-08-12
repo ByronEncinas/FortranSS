@@ -7,4 +7,7 @@ program main
 
     call system("echo 'Hola mundo'")
 
+    Print*, Precision(sp)
+    Print*, Precision(dp)
+
 end program main
