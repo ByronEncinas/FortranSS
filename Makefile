@@ -1,46 +1,56 @@
-# #
-## Makefile
-##
 #===============================================
-# Fortran Parameters
+# Compiler and Flags
 #===============================================
-FC = gfortran #Compiler
-FFLAGS = -O3  #Optimization Flags (maybe tinker with these?)
-FSRC = FortranSS.f90 ./src/Statistics/stat.f90 ./src/use_lib.f90 
-FOBJECTS = $(FSRC:.f90=.o) #Objets
+FC = gfortran
+CC = gcc
+FFLAGS = -O3 -Wall -Wextra -Wpedantic -std=f2008
+CFLAGS = -O -Wall -Wextra
+
 #===============================================
-# C Parameters
+# Directories
 #===============================================
-CC = gcc #Compiler
-CFLAGS = -O   #-ffixed-line-length-132 #Optimization Flags (maybe tinker with these?)
-CSRC = 
-COBJECTS = $(CSRC:.c=.u) # C Objets 
-CHEAD = 
+SRC_DIR = src
+OBJ_DIR = obj
+EXEC_DIR = bin
+
 #===============================================
-# General Parameters.  
+# Source Files and Objects
 #===============================================
-OBJECTS =	$(FOBJECTS) $(COBJECTS)
-EXEC =  executable
+FSRC = $(wildcard $(SRC_DIR)/**/*.f90)
+CSRC = $(wildcard $(SRC_DIR)/**/*.c)
+FOBJECTS = $(patsubst $(SRC_DIR)/%.f90, $(OBJ_DIR)/%.o, $(FSRC))
+COBJECTS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.u, $(CSRC))
+
+#===============================================
+# General Parameters
+#===============================================
+EXEC = $(EXEC_DIR)/executable
 
 #===============================================
 # Compilation rules
 #===============================================
-default: $(EXEC)
+.PHONY: all clean spotless
 
-clean:	
-	rm -f *~ $(OBJECTS) *.pro *.ascii *.nat *.mod *.Gh
+all: $(EXEC)
 
-spotless:	
+clean:
+	rm -rf *~ $(OBJECTS) *.pro *.ascii *.nat *.mod *.Gh *.o ./obj ./bin
+
+spotless: clean
 	rm -f *~ $(OBJECTS) $(EXEC)
 
-$(EXEC): $(OBJECTS)
-	$(FC) $(FFLAGS) $(FLFLAGS) -o $(EXEC) \
-		 $(OBJECTS) -lm
+$(EXEC): $(FOBJECTS) $(COBJECTS)
+	$(FC) $(FFLAGS) -o $@ $^ -lm
 
-%.o:  %.f90
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.f90
+	@mkdir -p $(dir $@)
 	$(FC) $(FFLAGS) -c $< -o $@
 
-%.u:	%.c $(CHEAD)	
-	$(CC) $(CFLAGS) -c $< -o $@ 
+$(OBJ_DIR)/%.u: $(SRC_DIR)/%.c $(CHEAD)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-	rm *.o
+#===============================================
+# Create Directories
+#===============================================
+$(shell mkdir -p $(OBJ_DIR) $(EXEC_DIR))
