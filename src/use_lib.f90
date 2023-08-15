@@ -1,9 +1,10 @@
 Program use_lib
 
-    implicit none
-
     use stat
     use spfunclib
     use plotlib
+
+    implicit none
+
 
 End Program use_lib

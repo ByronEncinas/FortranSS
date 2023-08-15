@@ -1,16 +1,26 @@
-## Makefile (See https://fortran-lang.org/en/learn/building_programs/project_make/ to improve)
-
+# #
+## Makefile
+##
+#===============================================
+# Fortran Parameters
+#===============================================
 FC = gfortran #Compiler
 FFLAGS = -O3  #Optimization Flags (maybe tinker with these?)
-FSRC = main.f90 
+FSRC = FortranSS.f90 ./src/Statistics/stat.f90 ./src/use_lib.f90 
 FOBJECTS = $(FSRC:.f90=.o) #Objets
-
+#===============================================
+# C Parameters
+#===============================================
+CC = gcc #Compiler
+CFLAGS = -O   #-ffixed-line-length-132 #Optimization Flags (maybe tinker with these?)
+CSRC = 
+COBJECTS = $(CSRC:.c=.u) # C Objets 
+CHEAD = 
 #===============================================
 # General Parameters.  
 #===============================================
-
 OBJECTS =	$(FOBJECTS) $(COBJECTS)
-EXEC =  Executable
+EXEC =  executable
 
 #===============================================
 # Compilation rules
@@ -18,7 +28,7 @@ EXEC =  Executable
 default: $(EXEC)
 
 clean:	
-	rm -f *~ $(OBJECTS) *.pro *.ascii *.nat *.mod *.Gh 
+	rm -f *~ $(OBJECTS) *.pro *.ascii *.nat *.mod *.Gh
 
 spotless:	
 	rm -f *~ $(OBJECTS) $(EXEC)
@@ -29,3 +39,8 @@ $(EXEC): $(OBJECTS)
 
 %.o:  %.f90
 	$(FC) $(FFLAGS) -c $< -o $@
+
+%.u:	%.c $(CHEAD)	
+	$(CC) $(CFLAGS) -c $< -o $@ 
+
+	rm *.o
