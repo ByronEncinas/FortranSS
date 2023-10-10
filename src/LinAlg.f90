@@ -1,4 +1,4 @@
-module Particles
+module LinAlg
 
     use iso_fortran_env, only: real32
 
@@ -6,43 +6,51 @@ module Particles
 
     private
 
-    type, public :: Particle
+    type, public :: Matrix
     !private
-        character(len=10) :: name
-        real(kind=real32) :: mass
-        real(kind=real32) :: charge
-        real(kind=real32), dimension(3) :: position
-        real(kind=real32), dimension(3) :: velocity
+        integer(kind=real32) :: dim
+        real(kind=real32), allocatable:: M(:,:)
+        character(len=20):: data = "Square Matrices ONLY"
     contains
         procedure :: init   => init
-        procedure :: displacement => displacement
-    end type Particle
-
+    end type Matrix
 
 contains
-    subroutine init(self, name, mass, charge, position, velocity)
 
-        class(Particle), intent(in out) :: self
-        character(len=10), intent(in) :: name
-        real(kind=real32), intent(in) ::  mass, charge
-        real(kind=real32), intent(in), dimension(3) :: position, velocity
+    subroutine init(self, dim)
 
-        self%name = name
-        self%mass = mass
-        self%charge = charge
-        self%position = position
-        self%velocity = velocity
+        integer:: i, j
+        integer, intent(in) :: dim
+        class(Matrix), intent(in out) :: self
+
+        self%dim = dim
+        
+        allocate(self%M(dim,dim))
+
+        ! read the matrix here
+        do j = 1, dim
+            read*, (self%M(i,j), i = 1, dim)
+        end do
 
     end subroutine init   
 
-    subroutine displacement(self, new_position, displacement_vector)
+    subroutine levi_civita(Eijk)
 
-        class(Particle), intent(in out) :: self
-        real(kind=real32), intent(in), dimension(3) :: new_position
-        real(kind=real32), intent(out), dimension(3) :: displacement_vector
+        integer, intent(in out), dimension(3,3,3):: Eijk
 
-        displacement_vector = new_position - self%position
+        ! set up all zero
+        Eijk(:,:,:) = 0
 
-    end subroutine displacement
+        ! even permutations
+        Eijk(1,2,3) = 1
+        Eijk(3,1,2) = 1
+        Eijk(2,3,1) = 1
+
+        ! odd permutations
+        Eijk(1,3,2) = -1
+        Eijk(3,2,1) = -1
+        Eijk(2,1,3) = -1
+
+    end subroutine levi_civita
     
-end module Particles
+end module LinAlg

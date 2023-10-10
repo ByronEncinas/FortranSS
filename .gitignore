@@ -2,3 +2,6 @@
 *.o
 *.mod
 executables
+
+# remove main inside src
+/src/FortranSS.f90

@@ -12,6 +12,7 @@ Module Calculus
     contains
         procedure :: Euler   => Euler_Method
         procedure :: Simpson => Simpson_Method
+        procedure :: RungeKutta => RK4_Method
     end type Integrate
 
 contains
@@ -92,6 +93,41 @@ Subroutine Simpson_Method(self, func, delta, ab, Integral, type)
 End Subroutine Simpson_Method
 
 
+Subroutine RK4_Method(self, func, ab, delta)
+
+    class(Integrate), intent(in out) :: self
+    integer(kind=real32):: i, n
+    real(kind=real32), intent(inout) :: delta
+    real(kind=real32), external :: func
+    real(kind=real32), intent(in), dimension(2) :: ab
+    real(kind=real32):: xi
+
+    write(*,*) "Here is Euler Method"
+
+    !if( .not. present(delta) ) delta = 1.0e-6_real32 ! default value
+
+    write(*,*) delta
+
+    self%Integral = 0
+    n = floor((ab(2) - ab(1))/delta) 
+    
+    write(*,*) n
+
+    Do i = 1, n, 1 ! for midpoints
+
+        xi = ab(1) + i*delta/2
+        write(*,*) self%Integral
+        self%Integral = self%Integral + func(xi)*delta
+    
+    End do
+
+    self%Integral =  (self%Integral)*delta
+
+End Subroutine RK4_Method
+
+
+
+
 Subroutine Derivative( func, x, delta, diff )
     
     real, optional,intent(inout) :: delta
@@ -115,7 +151,5 @@ Subroutine SecondDerivative(func, x, delta, diff)
         diff = (func(x + delta) + func(x - delta)  - 2*func(x))/(delta**2)
 
 End Subroutine SecondDerivative
-
-
 
 End Module calculus

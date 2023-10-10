@@ -2,9 +2,7 @@
 # Compiler and Flags
 #===============================================
 FC = gfortran
-CC = gcc
 FFLAGS = -O3 -Wall -Wextra -Wpedantic -std=f2008
-CFLAGS = -O -Wall -Wextra
 
 #===============================================
 # Directories
@@ -16,15 +14,13 @@ EXEC_DIR = bin
 #===============================================
 # Source Files and Objects
 #===============================================
-FSRC = $(wildcard $(SRC_DIR)/**/*.f90)
-CSRC = $(wildcard $(SRC_DIR)/**/*.c)
+FSRC = $(wildcard $(SRC_DIR)/*.f90)
 FOBJECTS = $(patsubst $(SRC_DIR)/%.f90, $(OBJ_DIR)/%.o, $(FSRC))
-COBJECTS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.u, $(CSRC))
 
 #===============================================
 # General Parameters
 #===============================================
-EXEC = $(EXEC_DIR)/executable
+EXEC = $(EXEC_DIR)/fss
 
 #===============================================
 # Compilation rules
@@ -34,21 +30,18 @@ EXEC = $(EXEC_DIR)/executable
 all: $(EXEC)
 
 clean:
-	rm -rf *~ $(OBJECTS) *.pro *.ascii *.nat *.mod *.Gh *.o ./obj ./bin
+	rm -rf *~ $(OBJ_DIR)/*.o $(OBJ_DIR)/*.mod *.pro *.ascii *.nat *.Gh *.o ./bin
 
 spotless: clean
-	rm -f *~ $(OBJECTS) $(EXEC)
+	rm -rf *~ $(OBJ_DIR)/*.o $(OBJ_DIR)/*.mod $(OBJ_DIR)/ $(EXEC)
 
-$(EXEC): $(FOBJECTS) $(COBJECTS)
+$(EXEC): $(FOBJECTS)
+	@mkdir -p $(EXEC_DIR)
 	$(FC) $(FFLAGS) -o $@ $^ -lm
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.f90
 	@mkdir -p $(dir $@)
-	$(FC) $(FFLAGS) -c $< -o $@
-
-$(OBJ_DIR)/%.u: $(SRC_DIR)/%.c $(CHEAD)
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(FC) $(FFLAGS) -c $< -o $@ -J$(OBJ_DIR)
 
 #===============================================
 # Create Directories
