@@ -15,7 +15,35 @@ module LinAlg
         procedure :: init   => init
     end type Matrix
 
+    type, public :: Vector
+    !private
+        real(kind=real32):: vector(3)
+        real(kind=real32):: norm
+        character(len=20):: data = "Vector in Space"
+    contains
+        procedure :: set   => set
+        procedure :: mag   => mag
+    end type Vector
+
 contains
+
+    subroutine set(self)
+
+        integer:: i
+        class(Vector), intent(in out) :: self
+
+        read*, (self%vector(i), i = 1, 3)
+
+    end subroutine set   
+
+    subroutine mag(self)
+
+        class(Vector), intent(in out) :: self
+
+        ! calculate magnitude of vector
+        self%norm = sqrt(self%vector(1)*self%vector(1) + self%vector(2)*self%vector(2) + self%vector(3)*self%vector(3))
+
+    end subroutine mag
 
     subroutine init(self, dim)
 

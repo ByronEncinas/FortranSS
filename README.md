@@ -9,7 +9,7 @@ be compatible with the input of all the Plotting functions as well.
 - [ ] Next Features in Object Calculus: Runge Kutta Methods, Simplectic Integrator Feature (for all prev methods)
 - [x] Object Matrix: Initialize or declare by command line, Levi-Civita Tensor (Eijk only)
 - [ ] Next Features in Matrix: Gauss-Jordan Method, Trace of Matrix, Determinant, Inverse, LU Decomposition
-
+- [ ] Operators (Differential, Integral, QuantumMechanical, etc)
 - [ ] Standard Deviation, Normal Mean and Variance Fitting (for a data sample given at input)
 - [ ] Linear Regresion, Interpolations of N-grade polynomials 
 - [ ] Chi Squared (\mu and \sigma unknown), t-student (\sigma unknown) and Normal (both known)
