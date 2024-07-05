@@ -1,6 +1,6 @@
 Module Calculus
     
-    use iso_fortran_env, only: real32, real32, real128
+    use iso_fortran_env, only: real32, real64, real128
 
     implicit none
 
