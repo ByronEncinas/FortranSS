@@ -1,21 +1,51 @@
-# FortranSS (Library for Statistics and Math)
+# FortranST (Library for Numerical Methods)
 
-The idea is that all the results from the method that take large population samples as input, will
-be compatible with the input of all the Plotting functions as well.
+The idea is that all the results from the method that take large population samples as input will be compatible with the input of all the Plotting functions as well.
 
-- [x] Object Particle: initialize(mass, init_pos, init_vel, charge, ...), displacement updates method
-- [ ] Next Features in Object Particle: Electric Field, Grav Field created by it.
-- [x] Object Calculus: First Derivative Second Derivative, Euler Method, Simpsons Method (1/3,1/8,3/8)
-- [ ] Next Features in Object Calculus: Runge Kutta Methods, Simplectic Integrator Feature (for all prev methods), Finite Difference Method
-- [x] Object Matrix: Initialize or declare by command line, Levi-Civita Tensor (Eijk only)
-- [ ] Next Features in Matrix: Gauss-Jordan Method, Trace of Matrix, Determinant, Inverse, LU Decomposition
-- [ ] Operators (Differential, Integral, QuantumMechanical, etc)
-- [ ] Standard Deviation, Normal Mean and Variance Fitting (for a data sample given at input)
-- [ ] Linear Regresion, Interpolations of N-grade polynomials 
-- [ ] Chi Squared (\mu and \sigma unknown), t-student (\sigma unknown) and Normal (both known)
-- [ ] Logaritmic Integral
-- [ ] Exponential Integral
-- [ ] Error Function
-- [ ] Elliptic Functions (all types)
+- [x] **Object Particle**: initialize(mass, init_pos, init_vel, charge, ...), displacement updates method
+- [ ] **Next Features in Object Particle**: Electric Field, Grav Field created by it.
+
+- [x] **Object Calculus**: 
+  - First Derivative, Second Derivative
+  - Euler Method
+  - Simpson's Method (1/3, 1/8, 3/8)
+  pending...
+  - Finite difference approximations
+  - FFT
+  - Numerical quadrature (Trapezoidal, Simpson’s rule, Gaussian quadrature)
+  - Adaptive quadrature and Monte Carlo integration
+
+- [ ] **Next Features in Object Calculus**: 
+  - Symplectic Integrator Feature (Predictor-Corrector, etc. for all previous methods)
+  - **Numerical Methods for ODE and PDE:**
+    - Finite Difference Method
+    - Implicit and Explicit Methods (Euler, RK4, etc.)
+    - Adaptive step-size methods (Runge-Kutta-Fehlberg, Dormand-Prince)
+    - Finite Volume Methods (FVM)
+    - Finite Element Methods (FEM)
+    - Spectral methods
+    - Stability, consistency, and convergence analysis (Von Neumann stability, CFL condition)
+
+- [ ] **Object Matrix**: 
+  - Initialize Levi-Civita Tensor
+  - Square matrices methods
+  - Penrose inverse matrix
+
+- [ ] **Next Features in Matrix**: 
+  - Gauss-Jordan Method
+  - Trace of Matrix
+  - Determinant
+  - Inverse
+  - LU Decomposition
+
+- [ ] **Linear Regression and Interpolation**: 
+  - Interpolation of N-grade polynomials
+  - Least squares fitting and regression
+
+- [ ] **Special Functions**:
+  - Logarithmic Integral
+  - Exponential Integral
+  - Error Function
+  - Elliptic Functions (all types)
 
 
