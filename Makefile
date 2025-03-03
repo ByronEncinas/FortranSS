@@ -20,7 +20,7 @@ FOBJECTS = $(patsubst $(SRC_DIR)/%.f90, $(OBJ_DIR)/%.o, $(FSRC))
 #===============================================
 # General Parameters
 #===============================================
-EXEC = $(EXEC_DIR)/fss
+EXEC = $(EXEC_DIR)/fst
 
 #===============================================
 # Compilation rules
