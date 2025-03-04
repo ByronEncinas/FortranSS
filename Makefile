@@ -14,7 +14,7 @@ EXEC_DIR = bin
 #===============================================
 # Source Files and Objects
 #===============================================
-FSRC = $(wildcard $(SRC_DIR)/*.f90)
+FSRC = $(wildcard $(SRC_DIR)/*.f90) src/main.f90
 FOBJECTS = $(patsubst $(SRC_DIR)/%.f90, $(OBJ_DIR)/%.o, $(FSRC))
 
 #===============================================
