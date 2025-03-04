@@ -21,4 +21,4 @@ jobs:
         run: make
 
       - name: Verify executable
-        run: ls -l your_executable_name || (echo "Executable not found!" && exit 1)
+        run: ls -l bin/fst || (echo "Executable not found!" && exit 1)
