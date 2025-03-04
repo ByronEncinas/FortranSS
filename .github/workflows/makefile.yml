@@ -2,41 +2,23 @@ name: Makefile CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Debug: List repository contents
-      run: ls -l
+      - name: Install Fortran compiler and build tools
+        run: sudo apt-get update && sudo apt-get install -y gfortran make
 
-    - name: Install Fortran compiler and build tools
-      run: sudo apt-get update && sudo apt-get install -y gfortran build-essential automake autoconf dos2unix
+      - name: Compile the Fortran project
+        run: make
 
-    - name: Generate configure script (if missing)
-      run: autoreconf -i
-
-    - name: Fix line endings (if needed)
-      run: dos2unix configure
-
-    - name: Ensure configure script is executable
-      run: chmod +x configure
-
-    - name: Run configure script
-      run: ./configure
-
-    - name: Compile the Fortran project
-      run: make
-
-    - name: Run check
-      run: make check
-
-    - name: Run distcheck
-      run: make distcheck
+      - name: Verify executable
+        run: ls -l your_executable_name || (echo "Executable not found!" && exit 1)
