@@ -14,8 +14,8 @@ EXEC_DIR = bin
 #===============================================
 # Source Files and Objects
 #===============================================
-FSRC = $(wildcard $(SRC_DIR)/*.f90) src/main.f90
-FOBJECTS = $(patsubst $(SRC_DIR)/%.f90, $(OBJ_DIR)/%.o, $(FSRC))
+FSRC = $(wildcard $(SRC_DIR)/*.f90)	# Collect all .f90 files from the src/ directory
+FOBJECTS = $(patsubst $(SRC_DIR)/%.f90, $(OBJ_DIR)/%.o, $(FSRC))	# Create object file names from source
 
 #===============================================
 # General Parameters
@@ -36,14 +36,9 @@ spotless: clean
 	rm -rf *~ $(OBJ_DIR)/*.o $(OBJ_DIR)/*.mod $(OBJ_DIR)/ $(EXEC)
 
 $(EXEC): $(FOBJECTS)
-	@mkdir -p $(EXEC_DIR)
+	@mkdir -p $(EXEC_DIR)	# Ensure the bin directory exists
 	$(FC) $(FFLAGS) -o $@ $^ -lm
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.f90
-	@mkdir -p $(dir $@)
+	@mkdir -p $(dir $@)	# Ensure the obj directory structure exists
 	$(FC) $(FFLAGS) -c $< -o $@ -J$(OBJ_DIR)
-
-#===============================================
-# Create Directories
-#===============================================
-$(shell mkdir -p $(OBJ_DIR) $(EXEC_DIR))
