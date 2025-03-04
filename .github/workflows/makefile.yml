@@ -14,11 +14,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Fortran compiler and build tools
-        run: sudo apt-get update && sudo apt-get install -y gfortran make
+      - name: Install Fortran compiler, build tools, and Valgrind
+        run: sudo apt-get update && sudo apt-get install -y gfortran make valgrind
 
       - name: Compile the Fortran project
         run: make
 
       - name: Verify executable
         run: ls -l bin/fst || (echo "Executable not found!" && exit 1)
+
+      - name: Run Valgrind Memory Check
+        run: valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes bin/fst || (echo "Valgrind detected issues!" && exit 1)
