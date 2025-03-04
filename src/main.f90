@@ -13,14 +13,14 @@ program main
     type(Integrate):: Integration
     type(Derivative):: Flux
     real(kind=real32), dimension(2):: interval
-    real(kind=real32):: delta = 1.0e-3_real32
+    real(kind=real32):: delta = 1.0e-6_real32
 
 ! Test for Calculus Class
 
     print*, real32,real64,real128
     print*, 4,8,16
 
-    interval = [1.0_real32,2.0_real32]
+    interval = [0.0_real32,1.0_real32]
     
     call Integration%Euler(func, interval, delta)
     write(*,*)
@@ -38,7 +38,7 @@ contains
 real function func(x) result(res) ! output
     real(kind=real32), intent (in) :: x ! input
 
-    res = 2.*x**3. +2.*x -x**2.+1.
+    res = x**2.
 
 end function
 
