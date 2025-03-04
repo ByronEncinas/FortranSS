@@ -6,10 +6,11 @@ The idea is that all the results from the method that take large population samp
 - [ ] **Next Features in Object Particle**: Electric Field, Grav Field created by it.
 
 - [x] **Object Calculus**: 
-  - First Derivative, Second Derivative
-  - Euler Method
+  - First Derivative, Second Derivative (Done)
+  - Euler Method (Done)
   - Simpson's Method (1/3, 1/8, 3/8)
   pending...
+  - Crank-Nicholson
   - Finite difference approximations
   - FFT
   - Numerical quadrature (Trapezoidal, Simpson’s rule, Gaussian quadrature)
@@ -18,7 +19,6 @@ The idea is that all the results from the method that take large population samp
 - [ ] **Next Features in Object Calculus**: 
   - Symplectic Integrator Feature (Predictor-Corrector, etc. for all previous methods)
   - **Numerical Methods for ODE and PDE:**
-    - Finite Difference Method
     - Implicit and Explicit Methods (Euler, RK4, etc.)
     - Adaptive step-size methods (Runge-Kutta-Fehlberg, Dormand-Prince)
     - Finite Volume Methods (FVM)
@@ -30,8 +30,6 @@ The idea is that all the results from the method that take large population samp
   - Initialize Levi-Civita Tensor
   - Square matrices methods
   - Penrose inverse matrix
-
-- [ ] **Next Features in Matrix**: 
   - Gauss-Jordan Method
   - Trace of Matrix
   - Determinant

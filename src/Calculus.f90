@@ -152,6 +152,46 @@ Subroutine Simpson_Method(self, func, ab, type, delta)
 End Subroutine Simpson_Method
 
 
+Subroutine RK2_Method(self, func, ab, delta, alpha)
+
+    class(Integrate), intent(in out) :: self
+    integer(kind=real32):: i, n
+    real(kind=real32), intent(inout) :: delta
+    real(kind=real32), optional :: alpha_input
+    real(kind=real32), external :: func
+    real(kind=real32), intent(in), dimension(2) :: ab
+    real(kind=real32):: xi, yi, k1, k2, alpha
+
+    if (.not. present(alpha_input)) then
+	! Heun has alpha = 1
+	! Ralston method has alpha = 2/3
+	! midpoint method has alpha = 1/2
+	alpha = 1.0_real32
+    else
+	alpha = alpha_input
+    endif
+
+    if (delta <= 0.0_real32) Then
+        delta = 1.0e-4_real32
+    endif
+
+    self%Integral = func(ab(1))
+    n = floor((ab(2) - ab(1))/delta) 
+    xi = ab(1)
+    yi = self%Integral
+
+    Do i = 1, n, 1 ! for midpoints
+	k1 = func(xi)
+	k2 = func(xi + (1-1/(2*alpha))*delta)
+        xi = ab(1) + i*delta
+	self%Integral = yi + delta*((1-1/(2*alpha))*k1 + 1/(2*alpha)*k2)
+	yi = self%Integral    
+    End do
+
+    write(*,'(A, F20.10)') "Numerical Integration: ",self%Integral
+    
+End Subroutine RK2_Method
+
 Subroutine RK4_Method(self, func, ab, delta)
 
     class(Integrate), intent(in out) :: self
@@ -159,30 +199,30 @@ Subroutine RK4_Method(self, func, ab, delta)
     real(kind=real32), intent(inout) :: delta
     real(kind=real32), external :: func
     real(kind=real32), intent(in), dimension(2) :: ab
-    real(kind=real32):: xi
-
-    write(*,*) ""
-    write(*,'(A)') "Here is Euler Method"
+    real(kind=real32):: xi, k1, k2, k3, k4
 
     if (delta <= 0) Then
         delta = 1.0e-4_real32
     endif
 
-    self%Integral = 0
-    n = floor((ab(2) - ab(1))/delta) 
-    
-    write(*,'(A, I0)') "Iteration: ",n
+    self%Integral = func(ab(1))
+    n = floor((ab(2) - ab(1))/delta)
+    xi = ab(1)
 
     Do i = 1, n, 1 ! for midpoints
 
-        xi = ab(1) + i*delta
-        !write(*,*) self%Integral
-        self%Integral = self%Integral + func(xi)*delta
-    
+        k1 = func(xi, yi)
+        k2 = func(xi + 0.5*delta, yi + 0.5*delta*k1)
+	k3 = func(xi + 0.5*delta, yi + 0.5*delta*k2)
+	k4 = func(xi + delta, yi + delta*k3)
+
+        xi = ab(1) + i * delta
+        self%Integral + (1/6)*delta*(k1 + 2*k2 + 2*k3 + k4)
+
     End do
 
     write(*,'(A, F20.10)') "Numerical Integration: ",self%Integral
-    
-End Subroutine RK4_Method
+
+End Subroutine RK2_Method
 
 End Module calculus
