@@ -13,8 +13,6 @@ The idea is that all the results from the method that take large population samp
   - Crank-Nicholson
   - Finite difference approximations
   - FFT
-  - Numerical quadrature (Trapezoidal, Simpson’s rule, Gaussian quadrature)
-  - Adaptive quadrature and Monte Carlo integration
 
 - [ ] **Next Features in Object Calculus**: 
   - Symplectic Integrator Feature (Predictor-Corrector, etc. for all previous methods)

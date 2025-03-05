@@ -20,7 +20,8 @@ Module Calculus
     contains
         procedure :: Euler   => Euler_Method
         procedure :: Simpson => Simpson_Method
-        procedure :: RK => RK4_Method
+        procedure :: RK2 => RK2_Method
+        procedure :: RK4 => RK4_Method
     end type Integrate
 
 contains
