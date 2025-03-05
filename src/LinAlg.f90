@@ -128,6 +128,7 @@ contains
         real(kind=real32), dimension(:,:), intent(out) :: cof
         integer :: i, k
         print*, dim
+        
         ! removing row 1 and column j
         do i = 1, dim
             if (i==1)then
