@@ -8,17 +8,17 @@ module LinAlg
 
     type, public :: Matrix
     !private
-        integer(kind=real32) :: dim
+        integer :: dim
         real(kind=real32), allocatable:: M(:,:)
         character(len=20):: data = "Square Matrices ONLY"
     contains
-        procedure :: init   => init
-        procedure :: determinant   => determinant
-!        procedure :: trace   => trace
-!        procedure :: eigen   => eigenmethods
-!        procedure :: lu_decom   => lu_decomposition
-!        procedure :: qr_decom   => qr_decomposition
-!        procedure :: inverse   => inverse
+        procedure :: init
+        procedure :: determinant
+!        procedure :: trace
+!        procedure :: eigenmethods
+!        procedure :: lu_decomposition
+!        procedure :: qr_decomposition
+!        procedure :: inverse
     end type Matrix
 
     type, public :: Vector
@@ -51,21 +51,25 @@ contains
 
     end subroutine mag
 
-    subroutine init(self, dim)
+    subroutine init(self, dim, zero)
 
         integer:: i, j
         integer, intent(in) :: dim
+        integer, optional :: zero
         class(Matrix), intent(in out) :: self
 
         self%dim = dim
         
         allocate(self%M(dim,dim))
 
-        ! read the matrix here
-        do j = 1, dim
-            read*, (self%M(i,j), i = 1, dim)
-        end do
-
+        if (present(zero)) then
+            self%M(:,:) = 0
+        else
+            ! read the matrix here
+            do j = 1, dim
+                read*, (self%M(i,j), i = 1, dim)
+            end do
+        endif
     end subroutine init   
 
     subroutine levi_civita(Eijk)
@@ -87,46 +91,72 @@ contains
 
     end subroutine levi_civita
 
-    subroutine determinant(self, deter)
-    ! recursive implementation
+    recursive function recursive_determinant(M, dim) result(deter)
+        integer :: i, j, dim
+        real(kind=real32) :: deter
+        real(kind=real32) :: minor_deter
+        real(kind=real32), dimension(:,:), intent(in) :: M 
+        real(kind=real32), allocatable:: cof(:,:)
 
-        integer:: i,j,k
-        real(kind=real32), intent(out) :: deter
-        real(kind=real32), intent(in out) :: minor_deter
-        class(Matrix), intent(in out) :: self
-	class(Matrix), intent(in out) :: cof(:,:)
-
-        if (self%dim == 1) then
-            deter = self%M(1,1)
+        if (dim == 1) then
+            deter = M(1,1)
             return
-        endif
-        
-        if (self%dim == 2) then
-            deter = self%M(1,1)*self%M(2,2)-self%M(1,2)*self%M(2,1)
-            return
-        endif
+        end if
 
-        allocate(cof(self%dim - 1, self%dim - 1))
+        if (dim == 2) then
+            deter = M(1,1) * M(2,2) - M(1,2) * M(2,1)
+            return
+        end if
+
+        allocate(cof(dim-1,dim-1))
+
         deter = 0.0_real32
 
-        do j = 1, self%dim
-            do i = 1, self%dim
-                if (i == 1) cycle
-                do k = 1, self%dim
-                    if (k == j) cycle
-                    if (i > 1 .and. k > j) then
-                        cof%M(i-1, k-1) = self%M(i, k)
-                    elseif (i > 1) then
-                        cof%M(i-1, k) = self%M(i, k)
-                    endif
-                end do
-            end do
-
-            call determinant(cof, minor_deter)
-            deter  =  deter + (-1)**(i+j) * self%M(i, j)*minor_deter
+        do j = 1, dim ! expanding on row 1 
+            call get_minor(M, dim, j, cof)
+            minor_deter = recursive_determinant(cof, dim - 1)
+            deter = deter + (-1)**(1 + j) * M(1, j) * minor_deter
         end do
 
+        deallocate(cof)
+
+    end function recursive_determinant
+
+    subroutine get_minor(M, dim, j, cof)
+        integer, intent(in) :: dim, j
+        real(kind=real32), dimension(:,:), intent(in) :: M
+        real(kind=real32), dimension(:,:), intent(out) :: cof
+        integer :: i, k
+        print*, dim
+        ! removing row 1 and column j
+        do i = 1, dim
+            if (i==1)then
+                cycle
+            endif
+            ! for dim = 3
+            ! if j = 1, then k = 2, 3
+            ! if j = 2, then k = 3, 1
+            ! if j = 3, then k = 1, 2
+            do k = 1, dim
+                ! Skip the j-th column and first row
+                if (k < j)then
+                    print*, j
+                    cof(i-1, k) = M(i, k)
+                elseif (k > j) then
+                    print*, j
+                    cof(i-1, k-1) = M(i, k)
+                end if
+            end do
+        end do
+
+    end subroutine get_minor
+
+    subroutine determinant(self, deter)
+        class(Matrix), intent(in) :: self
+        real(kind=real32), intent(out) :: deter
+        deter = recursive_determinant(self%M, self%dim)
     end subroutine determinant
+
 
     ! Subroutine to calculate the trace of a matrix
     ! subroutine trace(self, trace)

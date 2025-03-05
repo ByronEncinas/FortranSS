@@ -14,11 +14,29 @@ program main
     type(Derivative):: Flux
     real(kind=real32), dimension(2):: interval
     real(kind=real32):: delta = 1.0e-6_real32
+    type(Matrix) :: A
+    real(kind=real32) :: det
+    integer :: i, j, dim
 
-! Test for Calculus Class
+    dim = 4  ! Size of the matrix
 
-    print*, real32,real64,real128
-    print*, 4,8,16
+    ! Initialize matrix A
+    call A%init(dim)
+
+    ! Print the matrix
+    print *, "Matrix A:"
+    do i = 1, dim
+        print *, (A%M(i, j), j = 1, dim)
+    end do
+
+    ! Compute determinant
+    call A%determinant(det)
+
+    ! Print result
+    print *, "Determinant of A:", det
+    
+
+    ! Test for Calculus Class
 
     interval = [0.0_real32,1.0_real32]
     
