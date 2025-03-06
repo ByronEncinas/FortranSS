@@ -26,31 +26,28 @@ Module Calculus
 
 contains
 
-Subroutine Fluxion(self,func, x, delta)
+Subroutine Fluxion(self, func, x, delta, dydx)
 
     class(Derivative), intent(in out) :: self
     real(kind=real32), intent(in) :: delta
     real(kind=real32), external :: func
     real(kind=real32), intent(in) :: x
+    real(kind=real32), intent(in out) :: dydx
 
-    self%Differential = (func(x + delta) - func(x))/delta
+    dydx = (func(x + delta) - func(x))/delta
     
-    write(*,'(A,F20.10)') "Value of f at x",func(x)
-    write(*,'(A,F20.10)') "Value of Derivative of f at x", self%Differential
-    
-
 End Subroutine Fluxion
 
-Subroutine SecondFluxion(self,func, x, delta) 
+
+Subroutine SecondFluxion(self,func, x, delta, d2ydx2) 
     
     class(Derivative), intent(in out) :: self
     real(kind=real32), intent(in) :: delta
     real(kind=real32), intent(in) :: x
     real(kind=real32), external :: func
+    real(kind=real32), intent(in out) :: d2ydx2
 
-    self%Differential =  (func(x + delta) + func(x - delta)  - 2*func(x))/(delta**2)
-
-    write(*,'(A,F20.10)') "Value of Second Derivative of f at x ",self%Differential
+    d2ydx2 =  (func(x + delta) + func(x - delta)  - 2*func(x))/(delta**2)
 
 End Subroutine SecondFluxion
 
@@ -223,5 +220,55 @@ Subroutine RK4_Method(self, func, ab, delta)
     write(*, '(A, F20.10)') "Numerical Integration: ", self%Integral
 
 End Subroutine RK4_Method
+
+subroutine root(func, xi, xj, max_tolerance, method_input, delta) 
+
+    type(Derivative):: Flux
+    integer :: i
+    real(kind=real32), intent(inout) :: max_tolerance, xi 
+    real(kind=real32), intent(out) :: xj
+    real(kind=real32), external :: func
+    character(len=2), optional, intent(in) :: method_input
+    real(kind=real32), optional, intent(in out) :: delta
+    character(len=2) :: method
+    real(kind=real32) :: dfdx, tolerance ! j = i+1
+
+    ! method can be
+    ! NR Newton-Rapson
+    ! BS Bisection
+    ! etc
+
+    if (present(method_input) )then
+        method = method_input
+    else
+        method = "NR"
+    endif
+
+
+    if (delta <= 0.0_real32) then
+        delta = 1.0e-4_real32
+    endif
+
+    if (method == "NR") then
+        i = 0
+
+        call Flux%Diff(func, xi, delta, dfdx)
+        xj = xi + func(xi)/dfdx
+        tolerance = abs(xj - xi)
+        do while (tolerance < max_tolerance)
+            call Flux%Diff(func, xi, delta, dfdx)
+            xj = xi + func(xi)/dfdx
+            tolerance = abs(xj - xi)
+            if (dfdx < 1.0e-10_real32) then
+                print *, "derivative too small, stopping iteration"
+                return
+            endif
+            xi = xj
+            i = i + 1
+        end do
+    endif
+
+End subroutine root
+
 
 End Module calculus

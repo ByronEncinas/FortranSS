@@ -46,7 +46,7 @@ program main
     write(*,*)
     call Integration%Simpson(func, interval, "3/8", delta)
     write(*,*)
-    call Flux%Diff(func, 0.0_real32, delta)
+    call Flux%Diff(func, 0.0_real32, delta, dydx)
     write(*,*)
     call Flux%SecDiff(func, 0.0_real32, delta)
 

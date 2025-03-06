@@ -13,7 +13,7 @@ program main
     type(Integrate):: Integration
     type(Derivative):: Flux
     real(kind=real32), dimension(2):: interval
-    real(kind=real32):: delta = 1.0e-6_real32
+    real(kind=real32):: delta = 1.0e-8_real32
     type(Matrix) :: A
     real(kind=real32) :: det
     integer :: i, j, dim
