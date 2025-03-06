@@ -141,10 +141,8 @@ contains
             do k = 1, dim
                 ! Skip the j-th column and first row
                 if (k < j)then
-                    print*, j
                     cof(i-1, k) = M(i, k)
                 elseif (k > j) then
-                    print*, j
                     cof(i-1, k-1) = M(i, k)
                 end if
             end do

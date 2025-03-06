@@ -4,6 +4,8 @@ Module Calculus
 
     implicit none
 
+    public :: Fixed_Point_Method
+
     private
 
     type, public :: Derivative
@@ -20,8 +22,8 @@ Module Calculus
     contains
         procedure :: Euler   => Euler_Method
         procedure :: Simpson => Simpson_Method
-        procedure :: RK2 => RK2_Method
-        procedure :: RK4 => RK4_Method
+        procedure :: RK2 => RK2_Method ! explicit
+        procedure :: RK4 => RK4_Method ! explicit
     end type Integrate
 
 contains
@@ -221,52 +223,58 @@ Subroutine RK4_Method(self, func, ab, delta)
 
 End Subroutine RK4_Method
 
-subroutine root(func, xi, xj, max_tolerance, method_input, delta) 
+
+subroutine Fixed_Point_Method(func, xi, xj, max_tolerance)
+
+    integer :: i
+    real(kind=real32), intent(inout) :: max_tolerance, xi 
+    real(kind=real32), intent(out) :: xj
+    real(kind=real32), external :: func
+    real(kind=real32) :: tolerance 
+
+    i = 0
+
+    xj = func(xi)
+    tolerance = abs(xj - xi)
+    
+    do while (tolerance > max_tolerance)
+        tolerance = abs(xj - xi)
+        xi = xj
+        xj = func(xi)
+        i = i + 1
+    end do
+End subroutine Fixed_Point_Method
+
+subroutine root(func, xi, xj, max_tolerance, delta) 
 
     type(Derivative):: Flux
     integer :: i
     real(kind=real32), intent(inout) :: max_tolerance, xi 
     real(kind=real32), intent(out) :: xj
     real(kind=real32), external :: func
-    character(len=2), optional, intent(in) :: method_input
     real(kind=real32), optional, intent(in out) :: delta
-    character(len=2) :: method
     real(kind=real32) :: dfdx, tolerance ! j = i+1
-
-    ! method can be
-    ! NR Newton-Rapson
-    ! BS Bisection
-    ! etc
-
-    if (present(method_input) )then
-        method = method_input
-    else
-        method = "NR"
-    endif
-
 
     if (delta <= 0.0_real32) then
         delta = 1.0e-4_real32
     endif
 
-    if (method == "NR") then
-        i = 0
+    i = 0
 
+    call Flux%Diff(func, xi, delta, dfdx)
+    xj = xi + func(xi)/dfdx
+    tolerance = abs(xj - xi)
+    do while (tolerance > max_tolerance)
         call Flux%Diff(func, xi, delta, dfdx)
         xj = xi + func(xi)/dfdx
         tolerance = abs(xj - xi)
-        do while (tolerance < max_tolerance)
-            call Flux%Diff(func, xi, delta, dfdx)
-            xj = xi + func(xi)/dfdx
-            tolerance = abs(xj - xi)
-            if (dfdx < 1.0e-10_real32) then
-                print *, "derivative too small, stopping iteration"
-                return
-            endif
-            xi = xj
-            i = i + 1
-        end do
-    endif
+        if (dfdx < 1.0e-10_real32) then
+            print *, "derivative too small, stopping iteration"
+            return
+        endif
+        xi = xj
+        i = i + 1
+    end do
 
 End subroutine root
 

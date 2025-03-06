@@ -8,20 +8,41 @@ program main
 
     implicit none
 
-    ! Type and variable cannot be named the same
-    ! type(Particle):: electron
     type(Integrate):: Integration
     type(Derivative):: Flux
-    real(kind=real32), dimension(2):: interval
-    real(kind=real32):: delta = 1.0e-6_real32
+    real(kind=real32):: delta = 1.0e-8_real32
     type(Matrix) :: A
     real(kind=real32) :: det
     integer :: i, j, dim
+    real(kind=real32) :: xi, xj, max_tolerance
+    real(kind=real32), parameter :: tolerance_threshold = 1.0e-6_real32
+
+    xi = 1.0_real32  ! Starting guess
+    max_tolerance = tolerance_threshold  
+
+    ! Call the fixed_point subroutine
+    call Fixed_Point_Method(func, xi, xj, max_tolerance)
+
+
+    ! Output the result
+    print *, "Fixed point found: ", xj
+    print *, "Initial guess: ", xi
+    print *, "Tolerance: ", max_tolerance
 
     dim = 4  ! Size of the matrix
 
     ! Initialize matrix A
-    call A%init(dim)
+    call A%init(dim, 0)
+
+    A%M(1,1) = 1.0
+    A%M(1,2) = 0.0
+    A%M(1,3) = 0.0
+    A%M(2,1) = 0.0
+    A%M(2,2) = 1.0
+    A%M(2,3) = 0.0
+    A%M(3,1) = 0.0
+    A%M(3,2) = 0.0
+    A%M(3,3) = 1.0
 
     ! Print the matrix
     print *, "Matrix A:"
@@ -32,32 +53,13 @@ program main
     ! Compute determinant
     call A%determinant(det)
 
-    ! Print result
     print *, "Determinant of A:", det
-    
-
-    ! Test for Calculus Class
-
-    interval = [0.0_real32,1.0_real32]
-    
-    call Integration%Euler(func, interval, delta)
-    write(*,*)
-    call Integration%Simpson(func, interval, "1/3", delta)
-    write(*,*)
-    call Integration%Simpson(func, interval, "3/8", delta)
-    write(*,*)
-    call Flux%Diff(func, 0.0_real32, delta, dydx)
-    write(*,*)
-    call Flux%SecDiff(func, 0.0_real32, delta)
-
 
 contains
 
-real function func(x) result(res) ! output
-    real(kind=real32), intent (in) :: x ! input
-
-    res = x**2.
-
-end function
+real function func(x)
+    real(kind=real32), intent(in) :: x
+    func =  cos(x)*sin(x)-x
+end function func
 
 end program main

@@ -8,15 +8,24 @@ program main
 
     implicit none
 
-    ! Type and variable cannot be named the same
-    ! type(Particle):: electron
-    type(Integrate):: Integration
-    type(Derivative):: Flux
-    real(kind=real32), dimension(2):: interval
     real(kind=real32):: delta = 1.0e-8_real32
     type(Matrix) :: A
     real(kind=real32) :: det
     integer :: i, j, dim
+    real(kind=real32) :: xi, xj, max_tolerance
+    real(kind=real32), parameter :: tolerance_threshold = 1.0e-6_real32
+
+    xi = 1.0_real32  ! Starting guess
+    max_tolerance = tolerance_threshold  
+
+    ! Call the fixed_point subroutine
+    call Fixed_Point_Method(func, xi, xj, max_tolerance)
+
+
+    ! Output the result
+    print *, "Fixed point found: ", xj
+    print *, "Initial guess: ", xi
+    print *, "Tolerance: ", max_tolerance
 
     dim = 4  ! Size of the matrix
 
@@ -42,7 +51,13 @@ program main
     ! Compute determinant
     call A%determinant(det)
 
-    ! Print result
     print *, "Determinant of A:", det
-    
+
+contains
+
+real function func(x)
+    real(kind=real32), intent(in) :: x
+    func =  cos(x)*sin(x)-x
+end function func
+
 end program main
