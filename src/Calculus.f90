@@ -24,6 +24,7 @@ Module Calculus
         procedure :: Simpson => Simpson_Method
         procedure :: RK2 => RK2_Method ! explicit
         procedure :: RK4 => RK4_Method ! explicit
+        procedure :: ImpRK2 => Implicit_RK2_Method ! explicit
     end type Integrate
 
 contains
@@ -191,6 +192,76 @@ Subroutine RK2_Method(self, func, ab, delta, alpha_input)
 
 End Subroutine RK2_Method
 
+Subroutine Implicit_RK2_Method(self, func, ab, delta)
+
+    ! Implicit 2nd-order Runge-Kutta method (RK2)
+    ! Given a differential equation dy/dt = f(t, y), the RK2 method is:
+    !
+    ! 1. Calculate k_1 using the current state:
+    !    k_1 = f(t_n, y_n)
+    !
+    ! 2. Solve for k_2 implicitly:
+    !    k_2 = f(t_n + h, y_n + h * a21 * k_1)
+    !
+    ! 3. Update the solution using the weighted combination of k_1 and k_2:
+    !    y_(n+1) = y_n + h * b1 * k_1 + h * b2 * k_2
+
+    class(Integrate), intent(in out) :: self
+    integer :: i, n
+    real(kind=real32), intent(inout) :: delta
+    real(kind=real32), external :: func
+    real(kind=real32), intent(in), dimension(2) :: ab
+
+    real(kind=real32) :: xi, yi, k1, k2, o
+
+
+    if (delta <= 0.0_real32) then
+        delta = 1.0e-4_real32
+    endif
+
+    self%Integral = func(ab(1))
+    n = floor((ab(2) - ab(1)) / delta)
+    xi = ab(1)
+    yi = func(xi)
+
+    do i = 1, n, 1
+        k1 = func(xi, yi)
+
+        !o = yi + k2*delta => k2 = (o - yi )/delta
+        
+        k2 = ImpRK2_fixed_point(func, xi, yi, 1.0e-6_real32, delta, yi) 
+        k2 = (k2 - yi)/delta
+        
+        xi = ab(1) + i * delta
+        yi = yi + delta * (k1 + k2)/2
+    end do
+
+    contains
+
+    function ImpRK2_fixed_point(func, xi, yi, max_tolerance, delta, res0) result(yj)
+
+    real(kind=real32), intent(inout) :: xi, yi, delta, res0
+    real(kind=real32), intent(in   ) :: max_tolerance
+    real(kind=real32), external :: func
+    real(kind=real32) :: tolerance 
+    real(kind=real32) :: yj
+    integer :: i
+    
+    i = 0
+
+    yi = func(xi,yi)*delta + res0
+    tolerance = abs((yj - yi) / yi)
+    
+    do while (tolerance > max_tolerance .or. i>1.0e+4)
+        tolerance = abs((yj - yi) / yi)
+        yi = yj
+        yj = func(xi, yi)*delta + res0
+        i = i + 1
+    end do
+    End function ImpRK2_fixed_point
+
+End Subroutine Implicit_RK2_Method
+
 Subroutine RK4_Method(self, func, ab, delta)
 
     class(Integrate), intent(in out) :: self
@@ -224,6 +295,7 @@ Subroutine RK4_Method(self, func, ab, delta)
 End Subroutine RK4_Method
 
 
+
 subroutine Fixed_Point_Method(func, xi, xj, max_tolerance)
 
     integer :: i
@@ -238,14 +310,14 @@ subroutine Fixed_Point_Method(func, xi, xj, max_tolerance)
     tolerance = abs(xj - xi)
     
     do while (tolerance > max_tolerance)
-        tolerance = abs(xj - xi)
+        tolerance = abs((xj - xi)/xi)
         xi = xj
         xj = func(xi)
         i = i + 1
     end do
 End subroutine Fixed_Point_Method
 
-subroutine root(func, xi, xj, max_tolerance, delta) 
+subroutine NewtonRapson(func, xi, xj, max_tolerance, delta) 
 
     type(Derivative):: Flux
     integer :: i
@@ -276,7 +348,7 @@ subroutine root(func, xi, xj, max_tolerance, delta)
         i = i + 1
     end do
 
-End subroutine root
+End subroutine NewtonRapson
 
 
 End Module calculus

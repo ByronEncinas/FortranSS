@@ -55,9 +55,9 @@ program main
 
 contains
 
-real function func(x)
-    real(kind=real32), intent(in) :: x
-    func =  cos(x)*sin(x)-x
+real function func(x,y)
+    real(kind=real32), intent(in) :: x,y
+    func =  cos(x)*sin(y)-x
 end function func
 
 end program main
