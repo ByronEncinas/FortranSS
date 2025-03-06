@@ -8,12 +8,25 @@ program main
 
     implicit none
 
-    real(kind=real32):: delta = 1.0e-8_real32
+    real(kind=real32):: delta = 1.0e-4_real32
     type(Matrix) :: A
     real(kind=real32) :: det
     integer :: i, j, dim
     real(kind=real32) :: xi, xj, max_tolerance
-    real(kind=real32), parameter :: tolerance_threshold = 1.0e-6_real32
+    real(kind=real32), parameter :: tolerance_threshold = 1.0e-2_real32
+
+    real(kind=real32) :: x0, y0, x_final
+    real(kind=real32), dimension(2) :: ab
+
+    ! Initial conditions and parameters
+    x0 = 0.0_real32    ! Initial value of x (start time)
+    y0 = 0.0_real32    ! Initial value of y
+    x_final = 1.0_real32  ! Final value of x (end time)
+
+    ab = [x0, x_final]
+
+    ! Call the Implicit RK2 method to solve the differential equation
+    call Implicit_RK2_Method(func, ab, delta)
 
     xi = 1.0_real32  ! Starting guess
     max_tolerance = tolerance_threshold  
@@ -55,9 +68,10 @@ program main
 
 contains
 
-real function func(x,y)
-    real(kind=real32), intent(in) :: x,y
-    func =  cos(x)*sin(y)-x
-end function func
+    real(kind=real32) function func(x, y)
+        real(kind=real32), intent(in) :: x, y
+        func = x + y ! Example: dy/dx = -y
+    end function func
+
 
 end program main

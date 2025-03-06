@@ -17,6 +17,21 @@ program main
     real(kind=real32) :: xi, xj, max_tolerance
     real(kind=real32), parameter :: tolerance_threshold = 1.0e-6_real32
 
+    real(kind=real32) :: x0, y0, x_final, delta
+    real(kind=real32), dimension(2) :: ab
+    type(Integrate) :: integrator
+
+    ! Initial conditions and parameters
+    x0 = 0.0_real32    ! Initial value of x (start time)
+    y0 = 1.0_real32    ! Initial value of y
+    x_final = 5.0_real32  ! Final value of x (end time)
+    delta = 0.1_real32   ! Time step size
+
+    ab = [x0, x_final]
+
+    ! Call the Implicit RK2 method to solve the differential equation
+    call Implicit_RK2_Method(integrator, func, ab, delta)
+
     xi = 1.0_real32  ! Starting guess
     max_tolerance = tolerance_threshold  
 
@@ -57,9 +72,9 @@ program main
 
 contains
 
-real function func(x)
-    real(kind=real32), intent(in) :: x
-    func =  cos(x)*sin(x)-x
-end function func
+    real(kind=real32) function func(x, y)
+        real(kind=real32), intent(in) :: x, y
+        func = -y  ! Example: dy/dx = -y
+    end function func
 
 end program main
